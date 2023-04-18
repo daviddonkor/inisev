@@ -9,7 +9,7 @@ class WebsiteSubscriber extends Model
 {
     use HasFactory;
 
-    public function subscribers(){
+    public function websubscribers(){
         return $this->belongsTo(Subscriber::class,'subscriber_id','id');
     }
 

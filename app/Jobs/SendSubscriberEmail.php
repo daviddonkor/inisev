@@ -11,7 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use illuminate\Support\Facades\Mail;
+
 
 class SendSubscriberEmail implements ShouldQueue
 {
@@ -30,22 +30,37 @@ class SendSubscriberEmail implements ShouldQueue
      */
     public function handle(): void
     {
-        $db = Website::with('posts','subscribers')->whereRelation('posts','status','=',1)->whereHas('subscribers')->get();
-        
+        $db = Website::has('subscribers')->has('posts')->with('posts','subscribers.websubscribers')->whereRelation('posts','status','=',1)->get();
+      
         foreach($db as $websiteWithNewPost){
 
-            $postsub = PostSubscriberRel::where('post_id',$websiteWithNewPost->posts->id)->where('emailed',1)->first();
-            if(!$postsub){
-                try {
-                    $postman=[];
-                    $postman['from'] =$websiteWithNewPost->url;
-                    $postman['post'] =$websiteWithNewPost->posts;
-                    $email = new SubscriberEmail($postman);
-                    Mail::to($websiteWithNewPost->subscribers->email)->send($email);
-                } catch (\Throwable $th) {
-                    throw $th;
+           $posts =$websiteWithNewPost->posts;
+           $subscribers =$websiteWithNewPost->subscribers ;
+         
+           
+            foreach ($posts as $post)
+            { 
+
+                foreach($subscribers as $subscriber){
+                  
+                    
+                    $postsub = PostSubscriberRel::where('post_id',$post->id)->where('subscriber_id',$subscriber->websubscribers->id)->where('emailed',1)->first();
+                    if(!$postsub){
+                        try {
+                            
+                           
+                            $email = new SubscriberEmail($post);
+                            \Mail::to($subscriber->websubscribers->email)->send($email);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                    
                 }
+                }
+
             }
+           
+          
         }
 
       

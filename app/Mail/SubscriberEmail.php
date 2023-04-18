@@ -2,9 +2,11 @@
 
 namespace App\Mail;
 
+use Faker\Provider\ar_EG\Address;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address as MailablesAddress;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -21,18 +23,28 @@ class SubscriberEmail extends Mailable
         $this->posts = $data;
     }
 
+    public function envelope():Envelope
+    {
+        return new Envelope(
+            from: new MailablesAddress('info@inisev.com','Inisev'),
+            subject:'Amazing Post now available to you',
+        );
+    }
     /**
      * Build the message.
      *
      * @return $this
      */
-    public function build()
+    public function content(): Content
     {
 
-        return $this->from($this->posts['from'])
-                    ->subject('Your New Posts')
-                    ->view('postemail')
-                    ->with('posts', $this->posts['posts']);
+        return new Content(
+                view:'postemail',
+                with:['post' => $this->posts]
+
+            
+        );
+       
 
           // flush session data
          // Session::forget('data');
