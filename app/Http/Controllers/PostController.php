@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PostCreated;
 use Illuminate\Http\Request;
 use App\Models\Post;
 class PostController extends Controller
@@ -19,6 +20,7 @@ class PostController extends Controller
         $mod->website_id =$request->website;
         try {
             $mod->save();
+            event(new PostCreated($mod));
             return $mod;
         } catch (\Throwable $th) {
             return response()->json(['status'=>0,'msg'=>
