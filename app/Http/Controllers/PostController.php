@@ -28,6 +28,6 @@ class PostController extends Controller
     }
 
     public function list(){
-        return Post::where('status','is',true)->get();
+        return Post::where('status','=',true)->get();
     }
 }

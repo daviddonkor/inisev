@@ -51,6 +51,12 @@ class SendSubscriberEmail implements ShouldQueue
                            
                             $email = new SubscriberEmail($post);
                             \Mail::to($subscriber->websubscribers->email)->send($email);
+                            $ps = PostSubscriberRel::updateOrCreate([
+                                'post_id' =>$post->id,
+                                'subscriber_id' => $subscriber->websubscribers->id,
+                                'emailed' => 1
+                            ]);
+
                         } catch (\Throwable $th) {
                             throw $th;
                         }

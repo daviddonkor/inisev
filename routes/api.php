@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/post', 'PostController@list');
-Route::post('/post', 'PostController@create');
+Route::get('/posts', ['uses'=>'App\Http\Controllers\PostController@list']);
+Route::post('/posts', ['uses'=>'App\Http\Controllers\PostController@create']);
